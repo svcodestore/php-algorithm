@@ -1,0 +1,20 @@
+{
+    "name": "sv/algorithm",
+    "description": "A Common Usage Algorithms That Implemented In PHP For SV.",
+    "license": "MIT",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Sv\\Algorithm\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "svcodestore",
+            "email": "svcodestore@yandex.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    }
+}
