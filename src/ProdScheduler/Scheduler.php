@@ -4,9 +4,19 @@ namespace Sv\Algorithm\ProdScheduler;
 
 class Scheduler extends AbstractScheduler implements SchedulerInterface
 {
-    use SchedulerComputeTrait;
 
-    public function __construct()
+    public function __construct(array $config)
     {
+        $this->init($config);
+    }
+
+    public function getSchedule(): array
+    {
+        return $this->getMonthSchedule();
+    }
+
+    public function getDaySchedule(int $timestamp): array
+    {
+        return $this->getSchedule();
     }
 }

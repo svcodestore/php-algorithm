@@ -18,22 +18,14 @@ enum AssemblelyGroups: int
 
 interface SchedulerInterface
 {
-    public function init(): void;
+    public function init(array $config): void;
 
-    public function schedule(): bool;
+    public function schedule(): void;
 
     // =============> output result <============ \\
-    public function getDaySchedule(): array;
-
-    public function getNextDaySchedule(): array;
-
-    public function getPreviousDaySchedule(): array;
+    public function getDaySchedule(int $timestamp): array;
 
     public function getMonthSchedule(): array;
-
-    public function getNextMonthSchedule(): array;
-
-    public function getPreviousMonthSchedule(): array;
 
     public function getSchedule(): array;
     // =============> output result <============ \\
@@ -53,10 +45,14 @@ interface SchedulerInterface
     // Max cost time compute
     public function getMCTC(): bool;
 
-    // Sup phase first compute
-    public function getSPFC(): bool;
+    // Sup phase compute first 
+    public function getSPCF(): bool;
 
-    public function getInitialPhase(): array;
+    public function getInitialPhase(): string;
+
+    public function getInitialPhaseInfo(): array;
+
+    public function getSinglePhase(): bool;
 
     // Initial schedule datetime
     public function getISDT(): string;
