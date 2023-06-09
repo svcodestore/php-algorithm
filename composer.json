@@ -3,6 +3,7 @@
     "description": "A Common Usage Algorithms That Implemented In PHP For SV.",
     "license": "MIT",
     "type": "library",
+    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "Sv\\Algorithm\\": "src/"
