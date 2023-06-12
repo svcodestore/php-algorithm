@@ -37,7 +37,7 @@ interface SchedulerInterface
 
     public function getGroupName(AssemblelyGroups $id): string;
 
-    public function getDefaultDayCalendar(): bool;
+    public function getDefaultDayCalendar(): array;
 
     // Equal division quantity
     public function getEDQ(): int;
