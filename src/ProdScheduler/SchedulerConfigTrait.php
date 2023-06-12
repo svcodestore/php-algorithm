@@ -36,7 +36,7 @@ trait SchedulerConfigTrait
     public array $nextDayCalendar;
     public array $prevDayCalendar;
 
-    public function init(array $config)
+    public function init(array $config): void
     {
         $this->parseConfig($config);
     }
