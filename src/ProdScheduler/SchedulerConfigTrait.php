@@ -8,33 +8,33 @@ trait SchedulerConfigTrait
     protected const SCHEDULER_DATETIME_FORMAT = 'Y-m-d H:i:s';
     protected const SCHEDULER_DATE_FORMAT = 'Y-m-d';
 
-    public string $year;
-    public string $month;
-    public AssemblelyGroups $group;
-    public string $groupName;
-    public array $defaultDayCalendar;
+    public string $year = '';
+    public string $month = '';
+    public AssemblelyGroups $group = AssemblelyGroups::First;
+    public string $groupName = '';
+    public array $defaultDayCalendar = [];
     // Equal division quantity
-    public int $EDQ;
+    public int $EDQ = 0;
     // Max cost time compute
-    public bool $MCTC;
+    public bool $MCTC = false;
     // Sup phase compute first
-    public bool $SPCF;
-    public string $initialPhase;
-    public bool $singlePhase;
+    public bool $SPCF = false;
+    public string $initialPhase = '';
+    public bool $singlePhase = false;
     // Initial schedule datetime
-    public string $ISDT;
+    public string $ISDT = '';
     // Initial schedule timestamp
-    public int $ISTS;
-    public bool $isUseCalendar;
-    public bool $isUseTPMCalendar;
+    public int $ISTS = 0;
+    public bool $isUseCalendar = false;
+    public bool $isUseTPMCalendar = false;
     // is use multiple shifts compute
-    public bool $isUseMSC;
-    public array $monthCalendar;
-    public array $nextMonthCalendar;
-    public array $prevMonthCalendar;
-    public array $dayCalendar;
-    public array $nextDayCalendar;
-    public array $prevDayCalendar;
+    public bool $isUseMSC = false;
+    public array $monthCalendar = [];
+    public array $nextMonthCalendar = [];
+    public array $prevMonthCalendar = [];
+    public array $dayCalendar = [];
+    public array $nextDayCalendar = [];
+    public array $prevDayCalendar = [];
 
     public function init(array $config): void
     {

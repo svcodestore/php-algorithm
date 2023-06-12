@@ -4,7 +4,7 @@ namespace Sv\Algorithm\ProdScheduler;
 
 trait SchedulerComputeTrait
 {
-    public array $scheduledList;
+    public array $scheduledList = [];
 
     use SchedulerConfigTrait;
 
