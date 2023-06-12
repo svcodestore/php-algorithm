@@ -6,9 +6,9 @@ abstract class AbstractScheduler
 {
     use SchedulerComputeTrait;
 
-    public function schedule()
+    public function schedule(): void
     {
-        return $this->compute();
+        $this->compute();
     }
 
     public function getMonthSchedule(): array
