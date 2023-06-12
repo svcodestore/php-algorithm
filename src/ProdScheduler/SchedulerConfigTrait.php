@@ -80,12 +80,12 @@ trait SchedulerConfigTrait
         return $this->SPCF;
     }
 
-    public function getISDT(): bool
+    public function getISDT(): string
     {
         return $this->ISDT;
     }
 
-    public function getISTS(): bool
+    public function getISTS(): int
     {
         return $this->ISTS;
     }
