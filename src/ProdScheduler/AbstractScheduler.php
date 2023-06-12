@@ -2,7 +2,7 @@
 
 namespace Sv\Algorithm\ProdScheduler;
 
-abstract class AbstractScheduler
+abstract class AbstractScheduler implements SchedulerInterface
 {
     use SchedulerComputeTrait;
 

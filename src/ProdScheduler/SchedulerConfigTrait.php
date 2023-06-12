@@ -55,7 +55,7 @@ trait SchedulerConfigTrait
         return $this->group;
     }
 
-    public function getGroupName(): string
+    public function getGroupName(AssemblelyGroups $id): string
     {
         return $this->groupName;
     }
