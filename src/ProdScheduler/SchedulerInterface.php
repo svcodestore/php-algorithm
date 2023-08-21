@@ -16,6 +16,13 @@ enum AssemblelyGroups: int
     case Tenth = 10;
 }
 
+enum ComputeDirection: int
+{
+    case Forward = 1;
+    case Reverse = 2;
+    case Both = 3;
+}
+
 interface SchedulerInterface
 {
     public function init(array $config): void;

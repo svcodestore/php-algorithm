@@ -8,6 +8,8 @@ class Scheduler extends AbstractScheduler implements SchedulerInterface
     public function __construct(array $config)
     {
         $this->init($config);
+
+        $this->schedule();
     }
 
     public function getSchedule(): array
