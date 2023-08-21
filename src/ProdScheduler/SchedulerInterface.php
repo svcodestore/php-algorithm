@@ -42,7 +42,7 @@ interface SchedulerInterface
 
     public function getGroup(): AssemblelyGroups;
 
-    public function getGroupName(AssemblelyGroups $id): string;
+    public function getGroupName(): string;
 
     public function getDefaultDayCalendar(): array;
 
