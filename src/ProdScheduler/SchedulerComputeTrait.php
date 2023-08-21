@@ -105,7 +105,7 @@ trait SchedulerComputeTrait
         $dayCalendar = $this->getDayCalendar($this->ISTS);
 
         $initialScheduleDate = date(self::SCHEDULER_DATE_FORMAT, $this->ISTS);
-        if ($this->computeDirection === ComputeDirection::Forward) {
+        if ($this->computeDirection === 1) {
             if (empty($dayCalendar)) {
                 $dayCalendarStartTime = $this->getDayCalendarStartTime($this->defaultDayCalendar);
 

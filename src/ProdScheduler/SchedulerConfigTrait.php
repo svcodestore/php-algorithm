@@ -28,7 +28,7 @@ trait SchedulerConfigTrait
     public string $ISDT = '';
     // Initial schedule timestamp
     public int $ISTS = 0;
-    public ComputeDirection $computeDirection = ComputeDirection::Forward;
+    public int $computeDirection = 1;
     public bool $isUseCalendar = false;
     public bool $isUseTPMCalendar = false;
     // is use multiple shifts compute
