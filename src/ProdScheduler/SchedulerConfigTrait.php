@@ -57,19 +57,95 @@ trait SchedulerConfigTrait
         $this->ISTS = strtotime($config['start']);
         $this->list = $this->parseList($config['list']);
         $this->listPhase = $config['listPhase'];
-        $this->defaultDayCalendar = $config['calendar'];
+        $this->defaultDayCalendar = $this->parseCalendar($config['calendar']);
         $this->EDQ = $config['edq'];
-        $this->monthCalendar = $config['monthCalendar'];
-        $this->nextMonthCalendar = $config['nextMonthCalendar'];
-        $this->prevMonthCalendar = $config['prevMonthCalendar'];
+        $this->monthCalendar = $this->parseCalendars($config['monthCalendar']);
+        $this->nextMonthCalendar = $this->parseCalendars($config['nextMonthCalendar']);
+        $this->prevMonthCalendar = $this->parseCalendars($config['prevMonthCalendar']);
         $this->initialPhase = $config['initialPhase'];
 
         $this->initialStartTimeCompute();
     }
 
-    private function parseCalendar(array $calendar): array
+    private function parseCalendars(array $calendar): array
     {
+        foreach ($calendar as $k => $c) {
+            $calendar[$k]['profile'] = $this->parseCalendar($c['profile'])['profile'];
+        }
+
         return $calendar;
+    }
+
+    private function parseCalendar(string $calendarStr): array
+    {
+        $calendar = [];
+        try {
+            $calendar = json_decode($calendarStr, true);
+            $c = $calendar['profile'];
+            $c['profile']['date'] = $calendar['date'] ?? '';
+
+            $c['profile']['rest'] = [
+                [
+                    "end" => $c['profile']['times'][1]['start'],
+                    "name" => "上午",
+                    "start" => $c['profile']['times'][0]['end'],
+                    "duration" => 5400
+                ],
+                [
+                    "end" => $c['profile']['times'][2]['start'],
+                    "name" => "下午",
+                    "start" => $c['profile']['times'][1]['end'],
+                    "duration" => 1800
+                ],
+            ];
+
+            return $c;
+        } catch (\Throwable $th) {
+            return [
+                'profile' => [
+                    "name" => "白班",
+                    "dayStart" => "07:30",
+                    "dayEnd" => "20:30",
+                    "dayDuration" => 14400 + 14400 + 10800,
+                    "times" => [
+                        [
+                            "end" => "11:30",
+                            "name" => "上午",
+                            "start" => "07:30",
+                            "duration" => 14400
+                        ],
+                        [
+                            "end" => "17:00",
+                            "name" => "下午",
+                            "start" => "13:00",
+                            "duration" => 14400,
+                            "interval" => 5400
+                        ],
+                        [
+                            "end" => "20:30",
+                            "name" => "晚上",
+                            "start" => "17:30",
+                            "duration" => 10800,
+                            "interval" => 1800
+                        ]
+                    ],
+                    "rest" => [
+                        [
+                            "end" => "13:00",
+                            "name" => "上午",
+                            "start" => "11:30",
+                            "duration" => 5400
+                        ],
+                        [
+                            "end" => "17:30",
+                            "name" => "下午",
+                            "start" => "17:00",
+                            "duration" => 1800
+                        ],
+                    ]
+                ]
+            ];
+        }
     }
 
     private function parseList(array $list): array
@@ -133,7 +209,9 @@ trait SchedulerConfigTrait
         $dayCalendarStartTime = '';
         if (isset($calendar['profile']) && count($calendar['profile']) > 0) {
             $profile = $calendar['profile'][0];
-            if (isset($profile['times']) && count($profile['times']) > 0) {
+            if (isset($profile['dayStart'])) {
+                $dayCalendarStartTime = $profile['dayStart'];
+            } elseif (isset($profile['times']) && count($profile['times']) > 0) {
                 if ($profile['times'][0]['start']) {
                     $dayCalendarStartTime = $profile['times'][0]['start'];
                 }
@@ -144,7 +222,9 @@ trait SchedulerConfigTrait
             $defaultDayCalendar = $this->getDefaultDayCalendar();
             if (isset($defaultDayCalendar['profile']) && count($defaultDayCalendar['profile']) > 0) {
                 $profile = $defaultDayCalendar['profile'][0];
-                if (isset($profile['times']) && count($profile['times']) > 0) {
+                if (isset($profile['dayStart'])) {
+                    $dayCalendarStartTime = $profile['dayStart'];
+                } elseif (isset($profile['times']) && count($profile['times']) > 0) {
                     if ($profile['times'][0]['start']) {
                         $dayCalendarStartTime = $profile['times'][0]['start'];
                     }
@@ -265,10 +345,10 @@ trait SchedulerConfigTrait
                 }
             }
 
-            return $c;
+            return $c['profile'];
         }
 
-        return $this->dayCalendar;
+        return $this->defaultDayCalendar['profile'];
     }
 
     public function getNextDayCalendar(): array

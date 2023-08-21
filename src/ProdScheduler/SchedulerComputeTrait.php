@@ -103,31 +103,34 @@ trait SchedulerComputeTrait
     private function initialStartTimeCompute(): int
     {
         $dayCalendar = $this->getDayCalendar($this->ISTS);
-        if (empty($dayCalendar)) {
-            $dayCalendar = $this->getDefaultDayCalendar();
-        }
 
         $initialScheduleDate = date(self::SCHEDULER_DATE_FORMAT, $this->ISTS);
         if ($this->computeDirection === ComputeDirection::Forward) {
-            foreach ($dayCalendar as $k => $day) {
-                if ($initialScheduleDate === $day['date']) {
-                    if ($day['is_rest'] === 1) {
-                        if ($k !== count($dayCalendar)) {
-                            $nextDayCalendar = $dayCalendar[$k + 1];
-                            if ($nextDayCalendar['is_rest'] === 1) {
-                                continue;
-                            } else {
-                                $nextDayCalendarDate = $nextDayCalendar['date'];
-                                $nextDayCalendarStartTime = $this->getDayCalendarStartTime($nextDayCalendarDate);
+            if (empty($dayCalendar)) {
+                $dayCalendarStartTime = $this->getDayCalendarStartTime($this->defaultDayCalendar);
 
-                                $this->ISDT = $nextDayCalendarDate . " " . $nextDayCalendarStartTime;
+                $this->ISDT = $initialScheduleDate . " " . $dayCalendarStartTime;
+            } else {
+                foreach ($dayCalendar as $k => $day) {
+                    if ($initialScheduleDate === $day['date']) {
+                        if ($day['is_rest'] === 1) {
+                            if ($k !== count($dayCalendar)) {
+                                $nextDayCalendar = $dayCalendar[$k + 1];
+                                if ($nextDayCalendar['is_rest'] === 1) {
+                                    continue;
+                                } else {
+                                    $nextDayCalendarDate = $nextDayCalendar['date'];
+                                    $nextDayCalendarStartTime = $this->getDayCalendarStartTime($nextDayCalendar);
+
+                                    $this->ISDT = $nextDayCalendarDate . " " . $nextDayCalendarStartTime;
+                                }
                             }
-                        }
-                    } else {
-                        $dayCalendarDate = $day['date'];
-                        $dayCalendarStartTime = $this->getDayCalendarStartTime($day);
+                        } else {
+                            $dayCalendarDate = $day['date'];
+                            $dayCalendarStartTime = $this->getDayCalendarStartTime($day);
 
-                        $this->ISDT = $dayCalendarDate . " " . $dayCalendarStartTime;
+                            $this->ISDT = $dayCalendarDate . " " . $dayCalendarStartTime;
+                        }
                     }
                 }
             }
@@ -167,8 +170,8 @@ trait SchedulerComputeTrait
         if ($diff >= $dayDuration) {
             while ($diff > 0) {
                 $dayCalendar = $this->getDayCalendar($originStart);
-                if ($dayCalendar['duration'] < $diff) {
-                    $diff -= $dayCalendar['duration'];
+                if ($dayCalendar['dayDuration'] < $diff) {
+                    $diff -= $dayCalendar['dayDuration'];
                     if ($isReverse) {
                         $originStart -= self::SCHEDULER_DAY_SECONDS;
                     } else {
@@ -289,25 +292,5 @@ trait SchedulerComputeTrait
         }
 
         return $time;
-    }
-
-    private function phaseCompleteTimeCompute(int $start, int $cost): int
-    {
-        while ($cost > 0) {
-            $dayCalendar = $this->getDayCalendar();
-            if ($dayCalendar['duration'] < $cost) {
-                $cost -= $dayCalendar['duration'];
-                $start += self::SCHEDULER_DAY_SECONDS;
-            } else {
-                break;
-            }
-        }
-
-        $originStart = $start;
-        $end = $start + $cost;
-        $dayCalendar = $this->getDayCalendar();
-
-
-        return 0;
     }
 }
