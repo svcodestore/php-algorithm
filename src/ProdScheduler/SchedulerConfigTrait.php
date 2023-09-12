@@ -55,14 +55,14 @@ trait SchedulerConfigTrait
         $this->computeDirection = $config['computeDirection'];
         $this->ISDT = $config['start'];
         $this->ISTS = strtotime($config['start']);
-        $this->list = $this->parseList($config['list']);
+        $this->initialPhase = $config['initialPhase'];
         $this->listPhase = $config['listPhase'];
-        $this->defaultDayCalendar = $this->parseCalendar($config['calendar']);
         $this->EDQ = $config['edq'];
+        $this->list = $this->parseList($config['list']);
+        $this->defaultDayCalendar = $this->parseCalendar($config['calendar']);
         $this->monthCalendar = $this->parseCalendars($config['monthCalendar']);
         $this->nextMonthCalendar = $this->parseCalendars($config['nextMonthCalendar']);
         $this->prevMonthCalendar = $this->parseCalendars($config['prevMonthCalendar']);
-        $this->initialPhase = $config['initialPhase'];
 
         $this->initialStartTimeCompute();
     }
@@ -201,35 +201,26 @@ trait SchedulerConfigTrait
             return [$maxCostTime, $reversePhase, $forwardPhase];
         }
 
-        return [];
+        return [[], [], []];
     }
 
     private function getDayCalendarStartTime(array $calendar): string
     {
         $dayCalendarStartTime = '';
-        if (isset($calendar['profile']) && count($calendar['profile']) > 0) {
-            $profile = $calendar['profile'][0];
-            if (isset($profile['dayStart'])) {
-                $dayCalendarStartTime = $profile['dayStart'];
+        if (isset($calendar['profile']) && isset($calendar['profile']['times']) && count($calendar['profile']['times']) > 0) {
+            $profile = $calendar['profile']['times'][0];
+
+            if (isset($profile['start'])) {
+                $dayCalendarStartTime = $profile['start'];
             } elseif (isset($profile['times']) && count($profile['times']) > 0) {
                 if ($profile['times'][0]['start']) {
                     $dayCalendarStartTime = $profile['times'][0]['start'];
                 }
             }
         }
-
         if (empty($dayCalendarStartTime)) {
             $defaultDayCalendar = $this->getDefaultDayCalendar();
-            if (isset($defaultDayCalendar['profile']) && count($defaultDayCalendar['profile']) > 0) {
-                $profile = $defaultDayCalendar['profile'][0];
-                if (isset($profile['dayStart'])) {
-                    $dayCalendarStartTime = $profile['dayStart'];
-                } elseif (isset($profile['times']) && count($profile['times']) > 0) {
-                    if ($profile['times'][0]['start']) {
-                        $dayCalendarStartTime = $profile['times'][0]['start'];
-                    }
-                }
-            }
+            $dayCalendarStartTime = $this->getDayCalendarStartTime($defaultDayCalendar);
         }
 
         return $dayCalendarStartTime;
@@ -344,6 +335,8 @@ trait SchedulerConfigTrait
                     }
                 }
             }
+
+            $c['profile']['date'] = $date;
 
             return $c['profile'];
         }

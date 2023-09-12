@@ -12,9 +12,9 @@ trait SchedulerComputeTrait
     {
         foreach ($this->list as $k => $item) {
             $itemQty = $item['item_qty'];
-            $itemPhaseMaxCostTime = $item['phase_max_cost'];
-            $reverseComputePhases = $item['phases_reverse'];
-            $forwardComputePhases = $item['phases_forward'];
+            $itemPhaseMaxCostTime = $this->list[$k]['phase_max_cost'];
+            $reverseComputePhases = $this->list[$k]['phases_reverse'];
+            $forwardComputePhases = $this->list[$k]['phases_forward'];
 
             $reverseComputePhasesCnt =  count($reverseComputePhases);
             if (!empty($reverseComputePhasesCnt)) {
@@ -34,7 +34,7 @@ trait SchedulerComputeTrait
                             $originStart = $start = $this->list[$k - 1]['phases_forward'][0]['start'];
                         }
                     } else {
-                        $nextPhase = $reverseComputePhases[$i + 1];
+                        $nextPhase = $this->list[$k]['phases_reverse'][$i + 1];
                         $originStart = $start = $nextPhase['start'];
                         $start -= ($itemPhase['dead_time'] + $itemPhase['ahead_time']);
                         if ($itemPhase['out_time'] > 0) {
@@ -61,7 +61,7 @@ trait SchedulerComputeTrait
                 }
             }
 
-            $initialPhase = $reverseComputePhases[$reverseComputePhasesCnt - 1];
+            $initialPhase = $this->list[$k]['phases_reverse'][$reverseComputePhasesCnt - 1];
             if (isset($initialPhase)) {
                 foreach ($forwardComputePhases as $i => $itemPhase) {
                     $workerNum = $itemPhase['worker_num'];
@@ -72,7 +72,7 @@ trait SchedulerComputeTrait
                         $originStart = $initialPhase['start'];
                         $start = $originStart + $initialPhase['dead_time'] + $initialPhase['ahead_time'];
                     } else {
-                        $prevItem = $forwardComputePhases[$i - 1];
+                        $prevItem = $this->list[$k]['phases_forward'][$i - 1];
                         if ($prevItem['out_time'] > 0) {
                             $originStart = $start = $prevItem['end'];
                         } else {
@@ -102,20 +102,21 @@ trait SchedulerComputeTrait
 
     private function initialStartTimeCompute(): int
     {
+        $initialScheduleDate = date(self::SCHEDULER_DATE_FORMAT, $this->ISTS);
         $dayCalendar = $this->getDayCalendar($this->ISTS);
 
-        $initialScheduleDate = date(self::SCHEDULER_DATE_FORMAT, $this->ISTS);
         if ($this->computeDirection === 1) {
             if (empty($dayCalendar)) {
                 $dayCalendarStartTime = $this->getDayCalendarStartTime($this->defaultDayCalendar);
 
                 $this->ISDT = $initialScheduleDate . " " . $dayCalendarStartTime;
             } else {
-                foreach ($dayCalendar as $k => $day) {
+                $monthCalendar = $this->getMonthCalendar();
+                foreach ($monthCalendar as $k => $day) {
                     if ($initialScheduleDate === $day['date']) {
                         if ($day['is_rest'] === 1) {
-                            if ($k !== count($dayCalendar)) {
-                                $nextDayCalendar = $dayCalendar[$k + 1];
+                            if ($k !== count($monthCalendar)) {
+                                $nextDayCalendar = $monthCalendar[$k + 1];
                                 if ($nextDayCalendar['is_rest'] === 1) {
                                     continue;
                                 } else {
@@ -194,44 +195,40 @@ trait SchedulerComputeTrait
             $dayDuration = $calendar['dayDuration'];
         }
 
-        foreach ($calendar as $c) {
-            if ($start >= $dayStart && $start <= $dayEnd) {
-                $times = $c['rest'];
-                foreach ($times as $t) {
-                    $restStart = strtotime("{$originStartDate} {$t['start']}");
-                    $restEnd = strtotime("{$originStartDate} {$t['end']}");
+        if ($start >= $dayStart && $start <= $dayEnd) {
+            $times = $calendar['rest'];
+            foreach ($times as $t) {
+                $restStart = strtotime("{$originStartDate} {$t['start']}");
+                $restEnd = strtotime("{$originStartDate} {$t['end']}");
 
-                    if ($start >= $restStart && $start < $restEnd) {
-                        if ($isReverse) {
-                            $start -= $t['duration'];
-                        } else {
-                            $start += $t['duration'];
-                        }
+                if ($start >= $restStart && $start < $restEnd) {
+                    if ($isReverse) {
+                        $start -= $t['duration'];
                     } else {
-                        $cycle = 10 * 60;
-                        $cycleCount = ceil($diff / $cycle);
-                        $_start = $originStart;
-                        for ($i = 1; $i <= $cycleCount; $i++) {
-                            if ($isReverse) {
-                                $_start -= $cycle * $i;
+                        $start += $t['duration'];
+                    }
+                } else {
+                    $cycle = 10 * 60;
+                    $cycleCount = ceil($diff / $cycle);
+                    $_start = $originStart;
+                    for ($i = 1; $i <= $cycleCount; $i++) {
+                        if ($isReverse) {
+                            $_start -= $cycle * $i;
 
-                                if ($_start >= $restStart && $_start < $restEnd) {
-                                    $start -= $t['duration'];
-                                    break;
-                                }
-                            } else {
-                                $_start += $cycle * $i;
+                            if ($_start >= $restStart && $_start < $restEnd) {
+                                $start -= $t['duration'];
+                                break;
+                            }
+                        } else {
+                            $_start += $cycle * $i;
 
-                                if ($_start >= $restStart && $_start < $restEnd) {
-                                    $start += $t['duration'];
-                                    break;
-                                }
+                            if ($_start >= $restStart && $_start < $restEnd) {
+                                $start += $t['duration'];
+                                break;
                             }
                         }
                     }
                 }
-            } else {
-                break;
             }
         }
 
@@ -279,7 +276,7 @@ trait SchedulerComputeTrait
 
     private function phaseTimeWithRestDayCompute(int &$time, bool $isReverse = false): int
     {
-        $calendar = $this->getDayCalendar();
+        $calendar = $this->getMonthCalendar();
 
         foreach ($calendar as $c) {
             if (strtotime($c['date']) < $time && $c['is_rest'] === 1) {
