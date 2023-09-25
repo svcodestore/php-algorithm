@@ -58,6 +58,7 @@ trait SchedulerConfigTrait
         $this->initialPhase = $config['initialPhase'];
         $this->listPhase = $config['listPhase'];
         $this->EDQ = $config['edq'];
+        $this->MCTC = $config['mctc'];
         $this->list = $this->parseList($config['list']);
         $this->defaultDayCalendar = $this->parseCalendar($config['calendar']);
         $this->monthCalendar = $this->parseCalendars($config['monthCalendar']);
