@@ -161,9 +161,13 @@ trait SchedulerConfigTrait
             $list[$k]['phase_max_cost'] = $maxCostTime;
             $list[$k]['phases_reverse'] = $reversePhase;
             $list[$k]['phases_forward'] = $forwardPhase;
+
+            if (empty($reversePhase) && empty($forwardPhase)) {
+                unset($list[$k]);
+            }
         }
 
-        return $list;
+        return array_values($list);
     }
 
     private function parsePhase(array $phase): array
