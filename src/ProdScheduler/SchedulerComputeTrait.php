@@ -45,7 +45,7 @@ trait SchedulerComputeTrait
                     }
 
                     $start = $this->phaseTimeWithCalendarCompute($originStart, $start, true);
-                    $start = $this->phaseTimeWithRestDayCompute($start);
+                    $start = $this->phaseTimeWithRestDayCompute($originStart, $start);
                     $this->list[$k]['phases_reverse'][$i]['start'] = $start;
 
                     if ($itemPhase['out_time'] > 0) {
@@ -53,7 +53,7 @@ trait SchedulerComputeTrait
                     } else {
                         $end = $start + $totalCost;
                         $end = $this->phaseTimeWithCalendarCompute($start, $end);
-                        $end = $this->phaseTimeWithRestDayCompute($end);
+                        $end = $this->phaseTimeWithRestDayCompute($start, $end);
                         $this->list[$k]['phases_reverse'][$i]['end'] = $end;
                     }
 
@@ -81,7 +81,7 @@ trait SchedulerComputeTrait
                         }
 
                         $start = $this->phaseTimeWithCalendarCompute($originStart, $start);
-                        $start = $this->phaseTimeWithRestDayCompute($start);
+                        $start = $this->phaseTimeWithRestDayCompute($originStart, $start);
                         $this->list[$k]['phases_forward'][$i]['start'] = $start;
 
                         if ($itemPhase['out_time'] > 0) {
@@ -89,7 +89,7 @@ trait SchedulerComputeTrait
                         } else {
                             $end = $start + $totalCost;
                             $end = $this->phaseTimeWithCalendarCompute($start, $end);
-                            $end = $this->phaseTimeWithRestDayCompute($end);
+                            $end = $this->phaseTimeWithRestDayCompute($start, $end);
                             $this->list[$k]['phases_forward'][$i]['end'] = $end;
                         }
                     }
@@ -296,12 +296,12 @@ trait SchedulerComputeTrait
         return $start;
     }
 
-    private function phaseTimeWithRestDayCompute(int &$time, bool $isReverse = false): int
+    private function phaseTimeWithRestDayCompute(int $start, int &$time, bool $isReverse = false): int
     {
         $calendar = $this->getMonthCalendar();
 
         foreach ($calendar as $c) {
-            if (strtotime($c['date']) < $time && $c['is_rest'] === 1) {
+            if (strtotime($c['date']) <= $time && strtotime($c['date']) >= $start && $c['is_rest'] === 1) {
                 if ($isReverse) {
                     $time -= self::SCHEDULER_DAY_SECONDS;
                 } else {
