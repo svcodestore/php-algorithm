@@ -31,7 +31,7 @@ trait SchedulerComputeTrait
                         if ($k === 0) {
                             $originStart = $start = $this->ISTS;
                         } else if (!empty($this->list[$k - 1]['phases_forward'])) {
-                            $originStart = $start = $this->list[$k - 1]['phases_forward'][0]['start'];
+                            $originStart = $start = $this->list[$k - 1]['phases_forward'][0]['end'];
                         }
                     } else {
                         $nextPhase = $this->list[$k]['phases_reverse'][$i + 1];
