@@ -43,7 +43,6 @@ trait SchedulerComputeTrait
                             $start -= $singleCost;
                         }
                     }
-
                     $start = $this->phaseTimeWithCalendarCompute($originStart, $start, true);
                     $start = $this->phaseTimeWithRestDayCompute($originStart, $start);
                     $this->list[$k]['phases_reverse'][$i]['start'] = $start;
@@ -104,7 +103,6 @@ trait SchedulerComputeTrait
     {
         $initialScheduleDate = date(self::SCHEDULER_DATE_FORMAT, $this->ISTS);
         $dayCalendar = $this->getDayCalendar($this->ISTS);
-
         if ($this->computeDirection === 1) {
             if (empty($dayCalendar)) {
                 $dayCalendarStartTime = $this->getDayCalendarStartTime($this->defaultDayCalendar);
@@ -112,25 +110,32 @@ trait SchedulerComputeTrait
                 $this->ISDT = $initialScheduleDate . " " . $dayCalendarStartTime;
             } else {
                 $monthCalendar = $this->getMonthCalendar();
-                foreach ($monthCalendar as $k => $day) {
-                    if ($initialScheduleDate === $day['date']) {
-                        if ($day['is_rest'] === 1) {
-                            if ($k !== count($monthCalendar)) {
-                                $nextDayCalendar = $monthCalendar[$k + 1];
-                                if ($nextDayCalendar['is_rest'] === 1) {
-                                    continue;
-                                } else {
-                                    $nextDayCalendarDate = $nextDayCalendar['date'];
-                                    $nextDayCalendarStartTime = $this->getDayCalendarStartTime($nextDayCalendar);
+                if (empty($monthCalendar)) {
+                    $dayCalendarStartTime = $this->getDayCalendarStartTime($this->defaultDayCalendar);
 
-                                    $this->ISDT = $nextDayCalendarDate . " " . $nextDayCalendarStartTime;
+                    $this->ISDT = $initialScheduleDate . " " . $dayCalendarStartTime;
+                } else {
+
+                    foreach ($monthCalendar as $k => $day) {
+                        if ($initialScheduleDate === $day['date']) {
+                            if ($day['is_rest'] === 1) {
+                                if ($k !== count($monthCalendar)) {
+                                    $nextDayCalendar = $monthCalendar[$k + 1];
+                                    if ($nextDayCalendar['is_rest'] === 1) {
+                                        continue;
+                                    } else {
+                                        $nextDayCalendarDate = $nextDayCalendar['date'];
+                                        $nextDayCalendarStartTime = $this->getDayCalendarStartTime($nextDayCalendar);
+
+                                        $this->ISDT = $nextDayCalendarDate . " " . $nextDayCalendarStartTime;
+                                    }
                                 }
-                            }
-                        } else {
-                            $dayCalendarDate = $day['date'];
-                            $dayCalendarStartTime = $this->getDayCalendarStartTime($day);
+                            } else {
+                                $dayCalendarDate = $day['date'];
+                                $dayCalendarStartTime = $this->getDayCalendarStartTime($day);
 
-                            $this->ISDT = $dayCalendarDate . " " . $dayCalendarStartTime;
+                                $this->ISDT = $dayCalendarDate . " " . $dayCalendarStartTime;
+                            }
                         }
                     }
                 }
@@ -180,6 +185,10 @@ trait SchedulerComputeTrait
         if ($diff >= $dayDuration) {
             while ($diff > 0) {
                 $dayCalendar = $this->getDayCalendar($originStart);
+                if (!isset($dayCalendar['dayDuration'])) {
+                    $dayCalendar = $this->getDefaultDayCalendar()['profile'];
+                }
+
                 if (isset($dayCalendar['dayDuration']) && $dayCalendar['dayDuration'] < $diff) {
                     $diff -= $dayCalendar['dayDuration'];
                     if ($isReverse) {
@@ -250,7 +259,7 @@ trait SchedulerComputeTrait
         }
 
         if ($start < $dayStart) {
-            $prevCalendar = $this->getDayCalendar($start - self::SCHEDULER_DAY_SECONDS);
+            $prevCalendar = $this->getDayCalendar($originStart - self::SCHEDULER_DAY_SECONDS);
             if (!isset($prevCalendar['dayEnd'])) {
                 $defaultCalendar = $this->getDefaultDayCalendar();
                 $prevCalendar['rest'] = $defaultCalendar['profile']['rest'];
