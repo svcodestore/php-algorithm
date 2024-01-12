@@ -181,7 +181,6 @@ trait SchedulerComputeTrait
         $dayDuration = $calendar['dayDuration'];
         $diff = abs($start - $originStart);
 
-
         if ($diff >= $dayDuration) {
             while ($diff > 0) {
                 $dayCalendar = $this->getDayCalendar($originStart);
@@ -189,7 +188,7 @@ trait SchedulerComputeTrait
                     $dayCalendar = $this->getDefaultDayCalendar()['profile'];
                 }
 
-                if (isset($dayCalendar['dayDuration']) && $dayCalendar['dayDuration'] < $diff) {
+                if (isset($dayCalendar['dayDuration']) && $dayCalendar['dayDuration'] <= $diff) {
                     $diff -= $dayCalendar['dayDuration'];
                     if ($isReverse) {
                         $originStart -= self::SCHEDULER_DAY_SECONDS;
@@ -207,7 +206,7 @@ trait SchedulerComputeTrait
                 $start = $originStart + $diff;
             }
 
-            $calendar = $this->getDayCalendar($start);
+            $calendar = $this->getDayCalendar($originStart);
             if (!isset($calendar['dayStart'])) {
                 $defaultCalendar = $this->getDefaultDayCalendar();
                 $calendar['rest'] = $defaultCalendar['profile']['rest'];
