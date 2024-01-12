@@ -60,7 +60,7 @@ trait SchedulerConfigTrait
         $this->EDQ = $config['edq'];
         $this->MCTC = $config['mctc'];
         $this->list = $this->parseList($config['list']);
-        $this->defaultDayCalendar = $this->parseCalendar($config['calendar']);
+        $this->defaultDayCalendar = $this->parseCalendar($config['calendar'] ?? '');
         $this->monthCalendar = $this->parseCalendars($config['monthCalendar']);
         $this->nextMonthCalendar = $this->parseCalendars($config['nextMonthCalendar']);
         $this->prevMonthCalendar = $this->parseCalendars($config['prevMonthCalendar']);
@@ -70,8 +70,10 @@ trait SchedulerConfigTrait
 
     private function parseCalendars(array $calendar): array
     {
-        foreach ($calendar as $k => $c) {
-            $calendar[$k]['profile'] = $this->parseCalendar($c['profile'])['profile'];
+        if (!empty($calendar)) {
+            foreach ($calendar as $k => $c) {
+                $calendar[$k]['profile'] = $this->parseCalendar($c['profile'])['profile'];
+            }
         }
 
         return $calendar;
