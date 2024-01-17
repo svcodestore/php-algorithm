@@ -44,9 +44,8 @@ trait SchedulerComputeTrait
                         }
                     }
                     $start = $this->phaseTimeWithCalendarCompute($originStart, $start, true);
-                    $start = $this->phaseTimeWithRestDayCompute($originStart, $start);
+                    $start = $this->phaseTimeWithRestDayCompute($originStart, $start, true);
                     $this->list[$k]['phases_reverse'][$i]['start'] = $start;
-
                     if ($itemPhase['out_time'] > 0) {
                         $end = $start + $itemPhase['out_time'];
                     } else {
@@ -309,10 +308,12 @@ trait SchedulerComputeTrait
         $calendar = $this->getMonthCalendar();
 
         foreach ($calendar as $c) {
-            if (strtotime($c['date']) <= $time && strtotime($c['date']) >= $start && $c['is_rest'] === 1) {
-                if ($isReverse) {
+            if ($isReverse) {
+                if (strtotime($c['date'] . ' ' . $c['profile']['dayStart']) <= $start && strtotime($c['date'] . ' ' . $c['profile']['dayEnd']) >= $time && $c['is_rest'] === 1) {
                     $time -= self::SCHEDULER_DAY_SECONDS;
-                } else {
+                }
+            } else {
+                if (strtotime($c['date'] . ' ' . $c['profile']['dayStart']) <= $time && strtotime($c['date'] . ' ' . $c['profile']['dayEnd']) >= $start && $c['is_rest'] === 1) {
                     $time += self::SCHEDULER_DAY_SECONDS;
                 }
             }
