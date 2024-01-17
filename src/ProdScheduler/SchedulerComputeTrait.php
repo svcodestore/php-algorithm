@@ -87,10 +87,10 @@ trait SchedulerComputeTrait
                             $end = $start + $itemPhase['out_time'];
                         } else {
                             $end = $start + $totalCost;
-                            $end = $this->phaseTimeWithCalendarCompute($start, $end);
-                            $end = $this->phaseTimeWithRestDayCompute($start, $end);
-                            $this->list[$k]['phases_forward'][$i]['end'] = $end;
                         }
+                        $end = $this->phaseTimeWithCalendarCompute($start, $end);
+                        $end = $this->phaseTimeWithRestDayCompute($start, $end);
+                        $this->list[$k]['phases_forward'][$i]['end'] = $end;
                     }
                 }
             }
