@@ -62,7 +62,7 @@ trait SchedulerComputeTrait
                 if (isset($initialPhase)) {
                     foreach ($forwardComputePhases as $i => $itemPhase) {
                         $workerNum = $itemPhase['worker_num'];
-                        $costTime = $itemPhase['cost_time'];
+                        $costTime = $itemPhase['cost_time'] ?: 0;
 
                         list($singleCost, $totalCost) = $this->getPhaseCostTime($itemQty, $itemPhaseMaxCostTime, $costTime, $workerNum);
                         if ($i === 0) {
