@@ -37,12 +37,17 @@ trait SchedulerComputeTrait
                         $nextPhase = $this->list[$k]['phases_reverse'][$i + 1];
                         $originStart = $start = $nextPhase['start'];
                         $start -= ($itemPhase['dead_time'] + $itemPhase['ahead_time']);
-                        if ($itemPhase['out_time'] > 0) {
-                            $start -= $itemPhase['out_time'];
+                        if ($itemPhase['code_id'] > $this->initialPhase) {
+                            $start -= $totalCost;
                         } else {
-                            $start -= $singleCost;
+                            if ($itemPhase['out_time'] > 0) {
+                                $start -= $itemPhase['out_time'];
+                            } else {
+                                $start -= $singleCost;
+                            }
                         }
                     }
+                    
                     $start = $this->phaseTimeWithCalendarCompute($originStart, $start, true);
                     $start = $this->phaseTimeWithRestDayCompute($originStart, $start, true);
                     $this->list[$k]['phases_reverse'][$i]['start'] = $start;

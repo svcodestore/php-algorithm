@@ -182,7 +182,7 @@ trait SchedulerConfigTrait
             foreach ($phase as $p) {
                 $costTime[] = $p['cost_time'];
 
-                if ($p['code_id'] === $this->initialPhase) {
+                if ($p['code_id'] == $this->initialPhase) {
                     array_push(
                         $reversePhase,
                         ...array_filter(
