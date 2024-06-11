@@ -27,7 +27,7 @@ class Scheduler extends AbstractScheduler implements SchedulerInterface
             $phasesForward = $schedule['phases_forward'];
             $flag = true;
             foreach($phasesReverse as $p) {
-                if ($p['start'] >= strtotime($day) && $p['start'] <= strtotime($day) + self::SCHEDULER_DAY_SECONDS) {
+                if (($p['start'] >= strtotime($day) && $p['start'] <= strtotime($day) + self::SCHEDULER_DAY_SECONDS) || ($p['end'] >= strtotime($day) && $phasesReverse[0]['start'] <= strtotime($day))) {
                     $daySchedule[] = $schedule;
                     $flag = false;
                     break;
@@ -35,7 +35,7 @@ class Scheduler extends AbstractScheduler implements SchedulerInterface
             }
             if ($flag) {
                 foreach($phasesForward as $p) {
-                    if ($p['start'] >= strtotime($day) && $p['start'] <= strtotime($day) + self::SCHEDULER_DAY_SECONDS) {
+                    if (($p['start'] >= strtotime($day) && $p['start'] <= strtotime($day) + self::SCHEDULER_DAY_SECONDS) || ($p['end'] >= strtotime($day) && $phasesReverse[0]['start'] <= strtotime($day))) {
                         $daySchedule[] = $schedule;
                         $flag = false;
                         break;
