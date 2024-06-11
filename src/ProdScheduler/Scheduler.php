@@ -37,6 +37,8 @@ class Scheduler extends AbstractScheduler implements SchedulerInterface
                 foreach($phasesForward as $p) {
                     if ($p['start'] >= strtotime($day) && $p['start'] <= strtotime($day) + self::SCHEDULER_DAY_SECONDS) {
                         $daySchedule[] = $schedule;
+                        $flag = false;
+                        break;
                     }
                 }
             }
