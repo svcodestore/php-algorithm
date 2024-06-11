@@ -19,6 +19,29 @@ class Scheduler extends AbstractScheduler implements SchedulerInterface
 
     public function getDaySchedule(int $timestamp): array
     {
-        return $this->getSchedule();
+        $monthSchedule = $this->getSchedule();
+        $day = date('Y-m-d', $timestamp);
+        $daySchedule = [];
+        foreach($monthSchedule as $schedule) {
+            $phasesReverse = $schedule['phases_reverse'];
+            $phasesForward = $schedule['phases_forward'];
+            $flag = true;
+            foreach($phasesReverse as $p) {
+                if ($p['start'] >= strtotime($day) && $p['start'] <= strtotime($day) + self::SCHEDULER_DAY_SECONDS) {
+                    $daySchedule[] = $schedule;
+                    $flag = false;
+                    break;
+                }
+            }
+            if ($flag) {
+                foreach($phasesForward as $p) {
+                    if ($p['start'] >= strtotime($day) && $p['start'] <= strtotime($day) + self::SCHEDULER_DAY_SECONDS) {
+                        $daySchedule[] = $schedule;
+                    }
+                }
+            }
+        }
+
+        return $daySchedule;
     }
 }
