@@ -25,6 +25,10 @@ namespace Sv\Algorithm\ProdScheduler;
 
 interface SchedulerInterface
 {
+    public const SCHEDULER_DAY_SECONDS = 60 * 60 * 24; // 86400
+    public const SCHEDULER_DATETIME_FORMAT = 'Y-m-d H:i:s';
+    public const SCHEDULER_DATE_FORMAT = 'Y-m-d';
+
     public function init(array $config): void;
 
     public function schedule(): void;

@@ -105,7 +105,7 @@ trait SchedulerComputeTrait
 
     private function initialStartTimeCompute(): int
     {
-        $initialScheduleDate = date(self::SCHEDULER_DATE_FORMAT, $this->ISTS);
+        $initialScheduleDate = date('Y-m-d', $this->ISTS);
         $dayCalendar = $this->getDayCalendar($this->ISTS);
         if ($this->computeDirection === 1) {
             if (empty($dayCalendar)) {
@@ -170,7 +170,7 @@ trait SchedulerComputeTrait
 
     private function phaseTimeWithCalendarCompute(int $originStart, int &$start, bool $isReverse = false): int
     {
-        $originStartDate = date(self::SCHEDULER_DATE_FORMAT, $originStart);
+        $originStartDate = date('Y-m-d', $originStart);
 
         $calendar = $this->getDayCalendar($originStart);
         if (!isset($calendar['dayStart'])) {
@@ -195,9 +195,9 @@ trait SchedulerComputeTrait
                 if (isset($dayCalendar['dayDuration']) && $dayCalendar['dayDuration'] <= $diff) {
                     $diff -= $dayCalendar['dayDuration'];
                     if ($isReverse) {
-                        $originStart -= self::SCHEDULER_DAY_SECONDS;
+                        $originStart -= 86400;
                     } else {
-                        $originStart += self::SCHEDULER_DAY_SECONDS;
+                        $originStart += 86400;
                     }
                 } else {
                     break;
@@ -221,7 +221,7 @@ trait SchedulerComputeTrait
             $dayStart = strtotime("{$calendar['date']} {$calendar['dayStart']}");
             $dayEnd = strtotime("{$calendar['date']} {$calendar['dayEnd']}");
             $dayDuration = $calendar['dayDuration'];
-            $originStartDate = date(self::SCHEDULER_DATE_FORMAT, $originStart);
+            $originStartDate = date('Y-m-d', $originStart);
         }
 
         if ($start >= $dayStart && $start <= $dayEnd) {
@@ -262,7 +262,7 @@ trait SchedulerComputeTrait
         }
 
         if ($start < $dayStart) {
-            $prevCalendar = $this->getDayCalendar($originStart - self::SCHEDULER_DAY_SECONDS);
+            $prevCalendar = $this->getDayCalendar($originStart - 86400);
             if (!isset($prevCalendar['dayEnd'])) {
                 $defaultCalendar = $this->getDefaultDayCalendar();
                 $prevCalendar['rest'] = $defaultCalendar['profile']['rest'];
@@ -284,7 +284,7 @@ trait SchedulerComputeTrait
         }
 
         if ($start > $dayEnd) {
-            $nextCalendar = $this->getDayCalendar($start + self::SCHEDULER_DAY_SECONDS);
+            $nextCalendar = $this->getDayCalendar($start + 86400);
             if (isset($nextCalendar['dayStart'])) {
                 $nextDayStart = strtotime("{$nextCalendar['date']} {$nextCalendar['dayStart']}");
             } else {
@@ -315,11 +315,11 @@ trait SchedulerComputeTrait
         foreach ($calendar as $c) {
             if ($isReverse) {
                 if (strtotime($c['date'] . ' ' . $c['profile']['dayStart']) <= $start && strtotime($c['date'] . ' ' . $c['profile']['dayEnd']) >= $time && $c['is_rest'] === 1) {
-                    $time -= self::SCHEDULER_DAY_SECONDS;
+                    $time -= 86400;
                 }
             } else {
                 if (strtotime($c['date'] . ' ' . $c['profile']['dayStart']) <= $time && strtotime($c['date'] . ' ' . $c['profile']['dayEnd']) >= $start && $c['is_rest'] === 1) {
-                    $time += self::SCHEDULER_DAY_SECONDS;
+                    $time += 86400;
                 }
             }
         }

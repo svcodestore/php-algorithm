@@ -4,9 +4,6 @@ namespace Sv\Algorithm\ProdScheduler;
 
 trait SchedulerConfigTrait
 {
-    public const SCHEDULER_DAY_SECONDS = 60 * 60 * 24; // 86400
-    protected const SCHEDULER_DATETIME_FORMAT = 'Y-m-d H:i:s';
-    protected const SCHEDULER_DATE_FORMAT = 'Y-m-d';
 
     public string $year = '';
     public string $month = '';
@@ -321,7 +318,7 @@ trait SchedulerConfigTrait
     public function getDayCalendar(int $ts = 0): array
     {
         if ($ts) {
-            $date = date(self::SCHEDULER_DATE_FORMAT, $ts);
+            $date = date('Y-m-d', $ts);
             $c = [];
             foreach ($this->monthCalendar as $calendar) {
                 if ($calendar['date'] === $date) {
