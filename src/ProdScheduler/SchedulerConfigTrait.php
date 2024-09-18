@@ -10,7 +10,7 @@ trait SchedulerConfigTrait
 
     public string $year = '';
     public string $month = '';
-    public AssemblelyGroups $group = AssemblelyGroups::First;
+    public int $group = 1;
     public string $groupName = '';
     public array $list = [];
     public array $listPhase = [];
@@ -243,7 +243,7 @@ trait SchedulerConfigTrait
         return $this->config;
     }
 
-    public function getGroup(): AssemblelyGroups
+    public function getGroup(): int
     {
         return $this->group;
     }

@@ -2,19 +2,19 @@
 
 namespace Sv\Algorithm\ProdScheduler;
 
-enum AssemblelyGroups: int
-{
-    case First = 1;
-    case Second = 2;
-    case Third = 3;
-    case Fourth = 4;
-    case Fifth = 5;
-    case Sixth = 6;
-    case Seventh = 7;
-    case Eighth = 8;
-    case Ninth = 9;
-    case Tenth = 10;
-}
+// enum AssemblelyGroups: int
+// {
+//     case First = 1;
+//     case Second = 2;
+//     case Third = 3;
+//     case Fourth = 4;
+//     case Fifth = 5;
+//     case Sixth = 6;
+//     case Seventh = 7;
+//     case Eighth = 8;
+//     case Ninth = 9;
+//     case Tenth = 10;
+// }
 
 enum ComputeDirection: int
 {
@@ -40,7 +40,7 @@ interface SchedulerInterface
     // =============> configuration <============ \\
     public function getConfig(): array;
 
-    public function getGroup(): AssemblelyGroups;
+    public function getGroup(): int;
 
     public function getGroupName(): string;
 
