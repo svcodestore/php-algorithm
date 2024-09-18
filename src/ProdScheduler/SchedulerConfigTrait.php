@@ -40,6 +40,7 @@ trait SchedulerConfigTrait
     public array $nextDayCalendar = [];
     public array $prevDayCalendar = [];
     public array $config = [];
+    public bool $isMaterialApply = false;
 
     public function init(array $config): void
     {
@@ -53,6 +54,7 @@ trait SchedulerConfigTrait
         $this->month = $config['month'];
         $this->groupName = $config['groupName'];
         $this->computeDirection = $config['computeDirection'];
+        $this->isMaterialApply = $config['isMaterialApply'];
         $this->ISDT = $config['start'];
         $this->ISTS = strtotime($config['start']);
         $this->initialPhase = $config['initialPhase'];
@@ -198,6 +200,9 @@ trait SchedulerConfigTrait
                     if ($p['code_id'] < $this->initialPhase) {
                         $reversePhase[] = $p;
                     } else {
+                        if ($this->isMaterialApply && count($forwardPhase) > 0) {
+                            continue;
+                        }
                         $forwardPhase[] = $p;
                     }
                 }
